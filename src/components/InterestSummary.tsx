@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -27,10 +31,22 @@ interface ODAccount {
 interface InterestSummaryProps {
   interestData: InterestData;
   account: ODAccount | null;
+  selectedDate?: Date;
+  onDateChange?: (date: Date) => void;
 }
 
-export const InterestSummary = ({ interestData, account }: InterestSummaryProps) => {
+export const InterestSummary = ({ interestData, account, selectedDate, onDateChange }: InterestSummaryProps) => {
   if (!account) return null;
+
+  // Default to today if not provided
+  const [date, setDate] = useState<Date | null>(selectedDate ?? new Date());
+
+  const handleDateChange = (newDate: Date | null) => {
+    setDate(newDate);
+    if (onDateChange && newDate) {
+      onDateChange(newDate);
+    }
+  };
 
   const dailyRate = account.interestRate / 365 / 100;
   const monthlyRate = account.interestRate / 12 / 100;
@@ -38,10 +54,23 @@ export const InterestSummary = ({ interestData, account }: InterestSummaryProps)
   return (
     <Card className="banking-card">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calculator className="h-5 w-5" />
-          Interest Calculation
-        </CardTitle>
+        <div className="flex items-center justify-between mb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5" />
+            Interest Calculation
+          </CardTitle>
+          <div>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Interest until"
+                value={date}
+                maxDate={new Date()}
+                onChange={handleDateChange}
+                slotProps={{ textField: { size: 'small', sx: { minWidth: 140, background: 'white', borderRadius: 1 } } }}
+              />
+            </LocalizationProvider>
+          </div>
+        </div>
         <CardDescription>
           Interest calculated at {account.interestRate}% per annum
         </CardDescription>

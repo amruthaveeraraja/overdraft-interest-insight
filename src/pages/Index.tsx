@@ -15,12 +15,13 @@ import { useODAccount } from "@/hooks/useODAccount";
 const Index = () => {
   const { account, transactions, addTransaction, deleteTransaction, editTransaction, updateAccount, calculateInterest } = useODAccount();
   const [showAccountSetup, setShowAccountSetup] = useState(!account);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const currentBalance = transactions.reduce((balance, transaction) => {
     return transaction.type === 'credit' ? balance + transaction.amount : balance - transaction.amount;
   }, 0);
 
-  const interestData = calculateInterest();
+  const interestData = calculateInterest(selectedDate);
 
   if (showAccountSetup) {
     return (
@@ -134,7 +135,12 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <InterestSummary interestData={interestData} account={account} />
+            <InterestSummary 
+              interestData={interestData} 
+              account={account} 
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+            />
           </div>
 
           {/* Right Column - Transaction Ledger */}

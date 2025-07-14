@@ -91,7 +91,7 @@ export const useODAccount = () => {
     );
   };
 
-  const calculateInterest = (): InterestData => {
+  const calculateInterest = (untilDate?: Date): InterestData => {
     if (!account || transactions.length === 0) {
       return {
         totalInterest: 0,
@@ -107,7 +107,7 @@ export const useODAccount = () => {
     );
 
     const dailyRate = account.interestRate / 365 / 100;
-    const today = new Date();
+    const today = untilDate ? new Date(untilDate) : new Date();
     const startDate = new Date(account.startDate);
     
     let totalInterest = 0;
