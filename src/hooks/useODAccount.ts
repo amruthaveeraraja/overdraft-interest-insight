@@ -77,6 +77,20 @@ export const useODAccount = () => {
     setTransactions(prev => [...prev, newTransaction]);
   };
 
+  const deleteTransaction = (id: string) => {
+    setTransactions(prev => prev.filter(transaction => transaction.id !== id));
+  };
+
+  const editTransaction = (id: string, updatedData: Omit<Transaction, 'id'>) => {
+    setTransactions(prev => 
+      prev.map(transaction => 
+        transaction.id === id 
+          ? { ...updatedData, id }
+          : transaction
+      )
+    );
+  };
+
   const calculateInterest = (): InterestData => {
     if (!account || transactions.length === 0) {
       return {
@@ -162,6 +176,8 @@ export const useODAccount = () => {
     account,
     transactions,
     addTransaction,
+    deleteTransaction,
+    editTransaction,
     updateAccount,
     calculateInterest,
   };

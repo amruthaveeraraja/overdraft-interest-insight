@@ -13,7 +13,7 @@ import { InterestSummary } from "@/components/InterestSummary";
 import { useODAccount } from "@/hooks/useODAccount";
 
 const Index = () => {
-  const { account, transactions, addTransaction, updateAccount, calculateInterest } = useODAccount();
+  const { account, transactions, addTransaction, deleteTransaction, editTransaction, updateAccount, calculateInterest } = useODAccount();
   const [showAccountSetup, setShowAccountSetup] = useState(!account);
 
   const currentBalance = transactions.reduce((balance, transaction) => {
@@ -156,7 +156,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <TransactionLedger transactions={transactions} />
+            <TransactionLedger 
+              transactions={transactions} 
+              onDeleteTransaction={deleteTransaction}
+              onEditTransaction={editTransaction}
+            />
               </CardContent>
             </Card>
           </div>

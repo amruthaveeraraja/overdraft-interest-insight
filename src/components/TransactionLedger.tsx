@@ -15,9 +15,11 @@ interface Transaction {
 
 interface TransactionLedgerProps {
   transactions: Transaction[];
+  onDeleteTransaction: (id: string) => void;
+  onEditTransaction: (id: string, data: Omit<Transaction, 'id'>) => void;
 }
 
-export const TransactionLedger = ({ transactions }: TransactionLedgerProps) => {
+export const TransactionLedger = ({ transactions, onDeleteTransaction, onEditTransaction }: TransactionLedgerProps) => {
   const sortedTransactions = [...transactions].sort((a, b) => 
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
@@ -95,10 +97,32 @@ export const TransactionLedger = ({ transactions }: TransactionLedgerProps) => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          const newAmount = prompt('Enter new amount:', transaction.amount.toString());
+                          const newDescription = prompt('Enter new description:', transaction.description || '');
+                          if (newAmount && !isNaN(Number(newAmount))) {
+                            onEditTransaction(transaction.id, {
+                              ...transaction,
+                              amount: Number(newAmount),
+                              description: newDescription || undefined
+                            });
+                          }
+                        }}
+                      >
                         <Edit className="h-3 w-3" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this transaction?')) {
+                            onDeleteTransaction(transaction.id);
+                          }
+                        }}
+                      >
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
